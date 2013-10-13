@@ -4,11 +4,13 @@
  */
 package me.cocodrum.algorithm.structure;
 
+import java.util.Iterator;
+
 /**
  * @author xuhongfeng
  *
  */
-public class Link<T> {
+public class Link<T> implements Iterable<T> {
     private Node<T> head;
     private Node<T> tail;
     private int size = 0;
@@ -73,6 +75,60 @@ public class Link<T> {
     
     public int size() {
         return size;
+    }
+    
+    @Override
+    public String toString() {
+        StringBuilder sb = new StringBuilder();
+        sb.append("[");
+        boolean first = true;
+        for (T v:this) {
+            if (!first) {
+                sb.append(",");
+            }
+            first = false;
+            sb.append(v);
+        }
+        sb.append("]");
+        return sb.toString();
+    }
+
+    @Override
+    public Iterator<T> iterator() {
+        return new LinkIterator();
+    }
+    
+    private class LinkIterator implements Iterator<T> {
+        private Node<T> p;
+        
+        private LinkIterator() {
+            p = head;
+        }
+
+        @Override
+        public boolean hasNext() {
+            return p != null;
+        }
+
+        @Override
+        public T next() {
+            T v = p.value;
+            p = p.next;
+            return v;
+        }
+
+        @Override
+        public void remove() {
+            if (p == head) {
+                head = p.next;
+                return;
+            }
+            Node<T> q = head;
+            while (q.next != p) {
+                q = q.next;
+            }
+            q.next = p.next;
+        }
     }
 
     private class Node<T> {

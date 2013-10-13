@@ -31,4 +31,8 @@ public class LinkedQueue<T> implements Queue<T> {
         return link.popHead();
     }
 
+    @Override
+    public String toString() {
+        return link.toString();
+    }
 }
