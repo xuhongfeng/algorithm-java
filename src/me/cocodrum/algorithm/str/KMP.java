@@ -41,10 +41,11 @@ public class KMP {
         private char[] pattern;
         
         public void consume(char c) {
+            while (state>0 && pattern[state] != c) {
+                state = pi[state];
+            }
             if (pattern[state] == c) {
                 state++;
-            } else{
-                state = pi[state];
             }
         }
         
@@ -57,8 +58,11 @@ public class KMP {
             m = pattern.length;
             pi = new int[m];
             
+            if (m >= 2) {
+                pi[1] = 0;
+            }
             int k = 0;//back to this state
-            for (int q=1; q<m; q++) {
+            for (int q=2; q<m; q++) {
                 while (k>0 && pattern[k]!=pattern[q-1]) {
                     k = pi[k];
                 }

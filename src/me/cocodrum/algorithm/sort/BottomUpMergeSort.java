@@ -1,5 +1,5 @@
 /**
- * @(#)BottomUpMergeSort.java, Sep 14, 2013. 
+ * @(#)BottomUpMergeSort2.java, Nov 3, 2013. 
  * 
  */
 package me.cocodrum.algorithm.sort;
@@ -13,36 +13,35 @@ import me.cocodrum.algorithm.util.Utils;
  *
  */
 public class BottomUpMergeSort extends AbsSort {
-    private int[] aux;
 
     @Override
     public void sort(int[] input, int start, int end) {
-        if (input==null || end-start<=0) {
+        if (end-start <= 6) {
+            new InsertSort().sort(input, start, end);
             return;
         }
-        aux = new int[input.length];
-        int n = end - start + 1;
+        int n = end-start+1;
+        int[] aux = new int[input.length];
         
-        for (int step=2; step<=2*n; step *=2) {
-            int k = step/2;
-            for (int i=start; i<=end; i+=step) {
-                int mid = i+k-1;
-                if (mid < end) {
-                    int j = mid + k;
-                    if (j > end) {
-                        j = end;
-                    }
-                    merge(input, i, mid, j);
+        int step = 2;
+        while (true) {
+            for (int s=start; s<=end; s+=step) {
+                int e = s+step-1;
+                if (e > end) e=end;
+                int mid = s+step/2-1;
+                if (mid >= e) break;
+                if (input[mid] > input[mid+1]) {
+                    merge(input, aux, s, e, mid);
                 }
             }
-            
-            if (step == n) {
+            if (step >= n) {
                 break;
             }
+            step = 2*step;
         }
     }
-
-    private void merge(int[] input, int start, int mid, int end) {
+    
+    private void merge(int[] input, int[] aux, int start, int end, int mid) {
         //copy to aux
         for (int i=start; i<=end; i++) {
             aux[i] = input[i];
@@ -62,6 +61,7 @@ public class BottomUpMergeSort extends AbsSort {
             input[k++] = aux[j++];
         }
     }
+
     
     public static void main(String[] args) {
         int[] a = Utils.generateIntArray(100);

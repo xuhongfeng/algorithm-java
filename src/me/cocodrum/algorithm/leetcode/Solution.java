@@ -1,112 +1,61 @@
 package me.cocodrum.algorithm.leetcode;
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.HashSet;
-import java.util.LinkedList;
-import java.util.List;
-import java.util.Map;
-
 public class Solution {
-    public ArrayList<ArrayList<String>> findLadders(String start, String end, HashSet<String> dict) {
-        // Note: The Solution object is instantiated only once and is reused by each test case.
+    public String addBinary(String a, String b) {
+        // IMPORTANT: Please reset any member data you declared, as
+        // the same Solution instance will be reused for each test case.
+        if (a==null || a.length()==0) return b;
+        if (b==null || b.length()==0) return a;
         
-        ArrayList<ArrayList<String>> ret = new ArrayList<ArrayList<String>>();
-        if (start.equals(end)) {
-            ArrayList<String> subList = new ArrayList<String>(1);
-            subList.add(start);
-            ret.add(subList);
-            return ret;
+        String longer=a, shorter=b;
+        if (a.length() < b.length()) {
+            longer = b;
+            shorter = a;
         }
         
-        int n=start.length();
-        Map<Integer, Node> visited = new HashMap<Integer, Node>();
-        List<Node> queue = new LinkedList<Node>();
+        int n = longer.length()+1;
+        char[] c = new char[n];
+        copy(longer.toCharArray(), c);
+        add(c, shorter.toCharArray());
         
-        Node p = new Node(start, 1);
-        queue.add(p);
-        visited.put(start.hashCode(), p);
-        
-        int d = -1;
-        while (queue.size() > 0) {
-            p = queue.remove(0);
-            if (d!=-1 && p.distance>=d) continue;
-            
-            char[] a = p.value.toCharArray();
-            for (int i=0; i<n; i++) {
-                char old = a[i];
-                for (int j=1; j<26; j++) {
-                    if (a[i] == 'z') {
-                        a[i] = 'a';
-                    } else {
-                        a[i] = (char)(a[i]+1);
-                    }
-                    String s = new String(a);
-                    if (s.equals(end)) {
-                        d = p.distance+1;
-                        ArrayList<String> subList = new ArrayList<String>(d);
-                        subList.add(s);
-                        Node t = p;
-                        while (t != null) {
-                            subList.add(0, t.value);
-                            t = t.parent;
-                        }
-                        ret.add(subList);
-                        continue;
-                    }
-                    if (d!=-1) continue;
-                    if (dict.contains(s)) {
-                        int h = s.hashCode();
-                        if (!visited.containsKey(h)) {
-                            Node q = new Node(s, p.distance+1);
-                            q.parent = p;
-                            visited.put(h, q);
-                            queue.add(q);
-                        }
-                    }
-                }
-                a[i] = old;
-            }
+        int offset = 0;
+        if (c[0] == '0') {
+            offset = 1;
         }
-        
-        return ret;
+        return new String(c, offset, n-offset);
     }
     
-    private class Node {
-        String value;
-        int distance;
-        Node parent;
-        
-        public Node (String value, int d) {
-            this.value = value;
-            this.distance = d;
+    private void copy(char[] src, char[] dest) {
+        for (int i=0; i<src.length; i++) {
+            dest[i+1] = src[i];
         }
-
-        @Override
-        public String toString() {
-            StringBuilder sb = new StringBuilder();
-            if (parent != null) {
-                sb.append(parent.toString());
-                sb.append(",");
+        dest[0] = '0';
+    }
+    
+    private void add(char[] a, char[] b) {
+        int carry=0;
+        int k = a.length-b.length;
+        for (int i=b.length-1; i>=0; i--) {
+            int t = carry + b[i]-'0' + a[i+k]-'0';
+            carry = t>1 ? 1 : 0;
+            a[i+k] = (char)(t%2 + '0');
+        }
+        if (carry == 0) return;
+        int i=k-1;
+        while(true) {
+            if (a[i] == '0') {
+                a[i] = '1';
+                break;
+            } else {
+                a[i--] = '0';
             }
-            sb.append(value);
-            return sb.toString();
         }
-
-        
     }
     
     public static void main(String[] args) {
-        String[] s = new String[] {"ted","tex","red","tax","tad","den","rex","pee"};
-        String start = "red", end="tax";
+        String a = "11";
+        String b = "1";
+        String c = new Solution().addBinary(a, b);
         
-        HashSet<String> dict = new HashSet<String>();
-        for (String ss:s) {
-            dict.add(ss);
-        }
-        
-        ArrayList<ArrayList<String>> ret = new Solution().findLadders(start, end, dict);
-        for (ArrayList<String> list:ret) {
-            System.out.println(list);
-        }
+        System.out.println(c);
     }
 }
